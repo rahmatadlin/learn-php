@@ -3,13 +3,17 @@ require 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $password = $_POST['password'];
 
+    // Hash password sebelum disimpan ke database
+    $password_hashed = password_hash($password, PASSWORD_DEFAULT);
+
+    // Simpan user baru ke database
     $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-    $stmt->bind_param('ss', $username, $password);
+    $stmt->bind_param('ss', $username, $password_hashed);
 
     if ($stmt->execute()) {
-        echo "Registrasi berhasil. <a href='login.php'>Login di sini</a>";
+        echo "Registrasi berhasil! <a href='login.php'>Login di sini</a>";
     } else {
         echo "Error: " . $stmt->error;
     }
